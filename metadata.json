@@ -1,0 +1,6 @@
+{
+  "name": "Neko Adventure",
+  "description": "猫が主役の横スクロール2Dアクションゲーム。様々な地形やギミックを乗り越え、集めたコインや魚で猫を強化しながら、全3ステージのクリアを目指しましょう！",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
