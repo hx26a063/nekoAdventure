@@ -1,7 +1,7 @@
 import React from 'react';
 import { LevelConfig, PlayerStats } from '../types';
 import { audio } from './AudioEngine';
-import { Play, Lock, AlertTriangle, ArrowRight, Home, Cloud, Waves, HelpCircle, Flame, Cpu } from 'lucide-react';
+import { Play, Lock, AlertTriangle, ArrowRight, Home, Cloud, Waves, HelpCircle, Flame, Cpu, Flower2 } from 'lucide-react';
 
 interface StageSelectorProps {
   stats: PlayerStats;
@@ -30,6 +30,8 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
         return <Flame className="w-8 h-8 text-orange-500 animate-pulse" />;
       case 'cyber_space':
         return <Cpu className="w-8 h-8 text-cyan-400 rotate-45 animate-pulse" />;
+      case 'japanese_temple':
+        return <Flower2 className="w-8 h-8 text-rose-400 animate-pulse" />;
       default:
         return <HelpCircle className="w-8 h-8 text-slate-500" />;
     }
@@ -47,6 +49,8 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
         return 'bg-orange-100 text-orange-800 border-orange-300';
       case 'cyber_space':
         return 'bg-cyan-100 text-cyan-800 border-cyan-300';
+      case 'japanese_temple':
+        return 'bg-rose-100 text-rose-800 border-rose-300';
       default:
         return 'bg-slate-100 text-slate-800 border-slate-300';
     }
@@ -111,7 +115,9 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
                 ? 'from-purple-900/40 via-slate-900 to-slate-900 border-purple-800/40'
                 : level.environment === 'magma_cave'
                 ? 'from-orange-950/40 via-slate-900 to-slate-900 border-orange-900/40'
-                : 'from-cyan-900/40 via-slate-900 to-slate-900 border-cyan-800/40';
+                : level.environment === 'cyber_space'
+                ? 'from-cyan-900/40 via-slate-900 to-slate-900 border-cyan-800/40'
+                : 'from-rose-950/40 via-slate-900 to-slate-900 border-rose-900/40';
 
             const previewArt =
               level.environment === 'grassland'
@@ -122,7 +128,9 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
                 ? 'bg-linear-to-b from-purple-500 to-indigo-950'
                 : level.environment === 'magma_cave'
                 ? 'bg-linear-to-b from-orange-600 to-red-950'
-                : 'bg-linear-to-b from-cyan-600 to-violet-950';
+                : level.environment === 'cyber_space'
+                ? 'bg-linear-to-b from-cyan-600 to-violet-950'
+                : 'bg-linear-to-b from-rose-600 to-rose-950';
 
             return (
               <div
@@ -180,6 +188,16 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
                       <div className="absolute bottom-5 left-6 font-pixel text-xs animate-pulse">💿</div>
                       <div className="absolute top-2 right-10 text-[9px] font-mono text-cyan-300/40">01010101</div>
                       <div className="absolute bottom-1 right-2 text-[10px] text-cyan-300 font-pixel">⚡ 超重力</div>
+                    </>
+                  )}
+                  {level.environment === 'japanese_temple' && (
+                    <>
+                      <div className="absolute inset-x-0 bottom-0 h-6 bg-rose-950 opacity-80" />
+                      <div className="absolute bottom-2 left-6 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+                      <div className="absolute bottom-7 right-6 font-pixel text-lg">⛩️</div>
+                      <div className="absolute top-3 right-12 font-pixel text-xs animate-bounce">🌸</div>
+                      <div className="absolute top-5 left-12 font-pixel text-sm animate-pulse">🦊</div>
+                      <div className="absolute bottom-1 right-2 text-[10px] text-rose-300 font-pixel">🌸 桜吹雪</div>
                     </>
                   )}
                   

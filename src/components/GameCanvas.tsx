@@ -766,6 +766,150 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       };
       eList.push(stageBoss);
       bossRef.current = stageBoss;
+    } else if (levelConfig.environment === 'japanese_temple') {
+      // Stage 6: japanese_temple - cherry blossom shrines, torii arches and floating lanterns
+      let currentX = 0;
+      while (currentX < mapLen) {
+        const platformWidth = 240 + Math.random() * 160;
+        const gap = 110 + Math.random() * 90;
+
+        // Traditional Stone Path or Red Lacquered Wood platforms
+        pList.push({
+          id: `temple_plat_${currentX}`,
+          x: currentX,
+          y: currentX === 0 ? 380 : 250 + Math.random() * 110,
+          width: platformWidth,
+          height: 40,
+          vx: 0, vy: 0,
+          type: 'platform',
+          platformType: 'normal',
+        });
+
+        if (currentX > 200 && currentX < mapLen - 700) {
+          // Ninja Mice (trained spy rodents!)
+          eList.push({
+            id: `ninja_mouse_${currentX}`,
+            x: currentX + 40,
+            y: 190,
+            width: 34,
+            height: 34,
+            vx: -1.8,
+            vy: 0,
+            type: 'enemy',
+            enemyType: 'mouse',
+            hp: 5,
+            maxHp: 5,
+            direction: -1,
+            patrolMinX: currentX + 10,
+            patrolMaxX: currentX + platformWidth - 20,
+            isDefeated: false,
+            scoreValue: 900,
+          });
+
+          // Floating Wisps / Kitsunebi (represented as hedgehogs with fiery glow that cannot be jumped on easily)
+          if (Math.random() > 0.5) {
+            eList.push({
+              id: `kitsunebi_${currentX}`,
+              x: currentX + platformWidth / 2,
+              y: 150,
+              width: 32,
+              height: 32,
+              vx: 0.8,
+              vy: 0,
+              type: 'enemy',
+              enemyType: 'hedgehog',
+              hp: 4,
+              maxHp: 4,
+              direction: 1,
+              patrolMinX: currentX + 30,
+              patrolMaxX: currentX + platformWidth - 30,
+              isDefeated: false,
+              scoreValue: 1000,
+            });
+          }
+
+          // Karasu Tengu / Origami Crow (represented as birds)
+          if (Math.random() > 0.6) {
+            eList.push({
+              id: `tengu_crow_${currentX}`,
+              x: currentX + platformWidth - 60,
+              y: 80 + Math.random() * 60,
+              width: 34,
+              height: 34,
+              vx: 1.5,
+              vy: 0,
+              type: 'enemy',
+              enemyType: 'bird',
+              hp: 5,
+              maxHp: 5,
+              direction: 1,
+              patrolMinX: currentX + 40,
+              patrolMaxX: currentX + platformWidth - 10,
+              isDefeated: false,
+              scoreValue: 1100,
+            });
+          }
+        }
+
+        // Koban (traditional Japanese gold coins) in waves
+        const kobanCount = Math.floor(platformWidth / 70);
+        for (let k = 0; k < kobanCount; k++) {
+          iList.push({
+            id: `koban_${currentX}_${k}`,
+            x: currentX + 30 + k * 65,
+            y: 170 + Math.sin(k * 1.5) * 45,
+            width: 16,
+            height: 22, // slightly taller like a koban!
+            vx: 0, vy: 0,
+            type: 'item',
+            itemType: Math.random() > 0.75 ? 'fish' : 'coin',
+            isCollected: false,
+          });
+        }
+
+        currentX += platformWidth + gap;
+      }
+
+      // Torii gate structures and Japanese paper umbrellas (springs)
+      pList.push(
+        // red parasol springs
+        { id: 'temple_parasol_1', x: 750, y: 310, width: 45, height: 30, vx: 0, vy: 0, type: 'platform', platformType: 'spring' },
+        { id: 'temple_parasol_2', x: 2000, y: 280, width: 45, height: 30, vx: 0, vy: 0, type: 'platform', platformType: 'spring' },
+        // falling paper platform
+        { id: 'temple_sinking_paper', x: 1400, y: 240, width: 110, height: 20, vx: 0, vy: 0, type: 'platform', platformType: 'sinking' },
+        // floating clouds/wood platforms
+        { id: 'temple_moving_wood', x: 2700, y: 200, width: 130, height: 25, vx: 0, vy: 0, type: 'platform', platformType: 'moving', dx: 150, speed: 0.03, startX: 2700, startY: 200 },
+        { id: 'temple_torii_top_1', x: mapLen - 440, y: 320, width: 80, height: 20, vx: 0, vy: 0, type: 'platform', platformType: 'normal' },
+        { id: 'temple_torii_top_2', x: mapLen - 340, y: 270, width: 80, height: 20, vx: 0, vy: 0, type: 'platform', platformType: 'normal' }
+      );
+
+      iList.push(
+        { id: 'temple_sacred_sake', x: 1440, y: 160, width: 18, height: 18, vx: 0, vy: 0, type: 'item', itemType: 'milk_potion', isCollected: false },
+        { id: 'temple_scroll', x: 2750, y: 130, width: 18, height: 18, vx: 0, vy: 0, type: 'item', itemType: 'catnip', isCollected: false }
+      );
+
+      // Boss: Nine-Tailed Fox (九尾の妖狐) - floats gracefully, shoots foxfire and dashes
+      const bossX = mapLen - 600;
+      const stageBoss: Enemy = {
+        id: 'boss_stage_6',
+        x: bossX,
+        y: 120,
+        width: 140, // majestic and large!
+        height: 140,
+        vx: -1.8,
+        vy: 0,
+        type: 'enemy',
+        enemyType: 'bird', // floats and glides in midair beautifully!
+        hp: 120, // highest tier boss
+        maxHp: 120,
+        direction: -1,
+        patrolMinX: bossX - 250,
+        patrolMaxX: bossX + 250,
+        isDefeated: false,
+        scoreValue: 20000,
+      };
+      eList.push(stageBoss);
+      bossRef.current = stageBoss;
     }
 
     // Goal Flag / House at the very end
@@ -1195,16 +1339,41 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       } else if (enemy.enemyType === 'bird') {
         // Flaps in wavy sin curves
         enemy.stateTimer = (enemy.stateTimer || 0) + 1;
-        enemy.y += Math.sin(enemy.stateTimer * 0.05) * 1.5;
-        enemy.x += enemy.vx;
         
-        // Loop range
-        if (enemy.patrolMinX && enemy.x < enemy.patrolMinX) {
-          enemy.vx = Math.abs(enemy.vx);
-          enemy.direction = 1;
-        } else if (enemy.patrolMaxX && enemy.x > enemy.patrolMaxX) {
-          enemy.vx = -Math.abs(enemy.vx);
-          enemy.direction = -1;
+        if (enemy.id === 'boss_stage_6') {
+          // Nine-Tailed Fox: tracks player height gently and shoots forward/sinusoidal dashes!
+          enemy.y += Math.sin(enemy.stateTimer * 0.04) * 20 * 0.1;
+          
+          // Gentle tracking of player y level to be challenging!
+          if (p.y < enemy.y && enemy.y > 60) {
+            enemy.y -= 0.6;
+          } else if (p.y > enemy.y && enemy.y < 280) {
+            enemy.y += 0.6;
+          }
+          
+          // Move in patrol range
+          enemy.x += enemy.vx;
+          if (enemy.patrolMinX && enemy.x < enemy.patrolMinX) {
+            enemy.vx = Math.abs(enemy.vx) * 1.02; // speed up slightly when bouncing
+            if (enemy.vx > 3.2) enemy.vx = 3.2;
+            enemy.direction = 1;
+          } else if (enemy.patrolMaxX && enemy.x > enemy.patrolMaxX) {
+            enemy.vx = -Math.abs(enemy.vx) * 1.02;
+            if (Math.abs(enemy.vx) > 3.2) enemy.vx = -3.2;
+            enemy.direction = -1;
+          }
+        } else {
+          enemy.y += Math.sin(enemy.stateTimer * 0.05) * 1.5;
+          enemy.x += enemy.vx;
+          
+          // Loop range
+          if (enemy.patrolMinX && enemy.x < enemy.patrolMinX) {
+            enemy.vx = Math.abs(enemy.vx);
+            enemy.direction = 1;
+          } else if (enemy.patrolMaxX && enemy.x > enemy.patrolMaxX) {
+            enemy.vx = -Math.abs(enemy.vx);
+            enemy.direction = -1;
+          }
         }
       } else {
         // Grounded enemies
@@ -1231,7 +1400,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           // Hedgehog has prickles, cannot be jumped!
           p.vy = -6.5; // bounce up
           p.jumpCount = 1; // grant single jump again
-          damageEnemy(enemy, 1);
+          const stompDamage = stats.clawLevel; // 踏みつけ攻撃力はつめレベルに比例 (Lv1: 1.0, Lv5: 5.0)
+          damageEnemy(enemy, stompDamage);
         } else {
           // Cat takes damage!
           const pushSide = p.x < enemy.x ? -1 : 1;
@@ -1526,6 +1696,49 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         ctx.lineTo(800, sy + Math.sin(animCycle.current * 0.005) * 5);
         ctx.stroke();
       }
+    } else if (levelConfig.environment === 'japanese_temple') {
+      // Draw magnificent shrine backdrops (Silhouette Torii or mountains or trees)
+      ctx.fillStyle = 'rgba(74, 4, 16, 0.2)'; // deep dark pink shadow mountains
+      for (let m = 0; m < 3; m++) {
+        const offsetM = (m * 400 - camX * 0.15) % 900;
+        const finalOM = offsetM < 0 ? offsetM + 900 : offsetM;
+        ctx.beginPath();
+        ctx.moveTo(finalOM, 450);
+        ctx.lineTo(finalOM + 150, 180 + m * 30);
+        ctx.lineTo(finalOM + 300, 450);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Traditional Red Torii Gate silhouettes in the deep background
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.08)'; // soft red silhouette
+      for (let t = 0; t < 2; t++) {
+        const toriiX = (t * 500 - camX * 0.2) % 850;
+        const finalTX = toriiX < 0 ? toriiX + 850 : toriiX;
+        ctx.fillRect(finalTX, 280, 8, 120);
+        ctx.fillRect(finalTX + 50, 280, 8, 120);
+        ctx.fillRect(finalTX - 10, 270, 78, 12);
+        ctx.fillRect(finalTX - 5, 260, 68, 6);
+      }
+
+      // Elegant falling Cherry Blossom petals (桜吹雪) blowing in a gentle wind
+      ctx.fillStyle = 'rgba(251, 113, 133, 0.7)'; // beautiful sakura pink
+      for (let p = 0; p < 12; p++) {
+        const sakuraX = ((p * 90) + Math.sin(animCycle.current * 0.01 + p) * 35 - camX * 0.35) % 850;
+        const finalSakuraX = sakuraX < 0 ? sakuraX + 850 : sakuraX;
+        const sakuraY = (animCycle.current * 1.2 + p * 50) % 450;
+        
+        ctx.beginPath();
+        ctx.ellipse(finalSakuraX, sakuraY, 6, 3, Math.sin(animCycle.current * 0.03 + p), 0, Math.PI * 2);
+        ctx.fill();
+
+        // White glowing highlights for extra magic
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.beginPath();
+        ctx.arc(finalSakuraX - 1, sakuraY - 1, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(251, 113, 133, 0.7)';
+      }
     }
 
     // 2. Draw solid platforms/gimmicks
@@ -1645,6 +1858,14 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             ctx.fillRect(drawX, drawY, plat.width, 4);
             ctx.fillStyle = '#3b82f6'; // cobalt details on bottom corner
             ctx.fillRect(drawX, drawY + plat.height - 3, plat.width, 3);
+          } else if (levelConfig.environment === 'japanese_temple') {
+            // 朱塗りの漆器（朱色）と金色のライン
+            ctx.fillStyle = '#dc2626'; // Vermilion red lacquer
+            ctx.fillRect(drawX, drawY, plat.width, 10);
+            ctx.fillStyle = '#eab308'; // Golden ornamental line
+            ctx.fillRect(drawX, drawY + 10, plat.width, 3);
+            ctx.fillStyle = '#7b2cbf'; // Deep temple violet side
+            ctx.fillRect(drawX, drawY + 13, plat.width, plat.height - 13);
           }
           break;
       }
@@ -1660,52 +1881,124 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       const pulseScalar = Math.sin(animCycle.current * 0.15) * 2;
 
       if (it.itemType === 'coin') {
-        // Double concentric glowing gold circles
-        ctx.fillStyle = '#fbbf24';
-        ctx.strokeStyle = '#d97706';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(drawX + 9, drawY + 9 + pulseScalar, 8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
+        if (levelConfig.environment === 'japanese_temple') {
+          // Draw dynamic gold Koban coin (Japanese traditional gold coin)
+          ctx.fillStyle = '#fbbf24'; // gold
+          ctx.strokeStyle = '#b45309'; // bronze border
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.ellipse(drawX + 9, drawY + 9 + pulseScalar, 6, 9, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
 
-        ctx.fillStyle = '#fef08a';
-        ctx.beginPath();
-        ctx.arc(drawX + 9, drawY + 9 + pulseScalar, 4, 0, Math.PI * 2);
-        ctx.fill();
+          // Horizontal grid lines (characters on Koban)
+          ctx.strokeStyle = '#d97706';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(drawX + 6, drawY + 6 + pulseScalar);
+          ctx.lineTo(drawX + 12, drawY + 6 + pulseScalar);
+          ctx.moveTo(drawX + 5, drawY + 9 + pulseScalar);
+          ctx.lineTo(drawX + 13, drawY + 9 + pulseScalar);
+          ctx.moveTo(drawX + 6, drawY + 12 + pulseScalar);
+          ctx.lineTo(drawX + 12, drawY + 12 + pulseScalar);
+          ctx.stroke();
+        } else {
+          // Double concentric glowing gold circles
+          ctx.fillStyle = '#fbbf24';
+          ctx.strokeStyle = '#d97706';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(drawX + 9, drawY + 9 + pulseScalar, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#fef08a';
+          ctx.beginPath();
+          ctx.arc(drawX + 9, drawY + 9 + pulseScalar, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
       } else if (it.itemType === 'fish') {
-        // Red rare tuna fish representation
-        ctx.fillStyle = '#f43f5e';
-        ctx.strokeStyle = '#9f1239';
-        ctx.lineWidth = 1;
+        if (levelConfig.environment === 'japanese_temple') {
+          // Japanese beautiful Carp / Tai fish
+          ctx.fillStyle = '#f43f5e'; // cherry rosy pink Tai
+          ctx.strokeStyle = '#ffffff'; // white highlight outlines
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.ellipse(drawX + 10, drawY + 9 + pulseScalar, 9, 6, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // Tail fin
+          ctx.beginPath();
+          ctx.moveTo(drawX + 2, drawY + 9 + pulseScalar);
+          ctx.lineTo(drawX - 3, drawY + 4 + pulseScalar);
+          ctx.lineTo(drawX - 3, drawY + 14 + pulseScalar);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        } else {
+          // Red rare tuna fish representation
+          ctx.fillStyle = '#f43f5e';
+          ctx.strokeStyle = '#9f1239';
+          ctx.lineWidth = 1;
 
-        ctx.beginPath();
-        ctx.ellipse(drawX + 10, drawY + 9 + pulseScalar, 9, 5, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-        // Tail fin triangle
-        ctx.beginPath();
-        ctx.moveTo(drawX + 2, drawY + 9 + pulseScalar);
-        ctx.lineTo(drawX - 2, drawY + 5 + pulseScalar);
-        ctx.lineTo(drawX - 2, drawY + 13 + pulseScalar);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
+          ctx.beginPath();
+          ctx.ellipse(drawX + 10, drawY + 9 + pulseScalar, 9, 5, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          // Tail fin triangle
+          ctx.beginPath();
+          ctx.moveTo(drawX + 2, drawY + 9 + pulseScalar);
+          ctx.lineTo(drawX - 2, drawY + 5 + pulseScalar);
+          ctx.lineTo(drawX - 2, drawY + 13 + pulseScalar);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
       } else if (it.itemType === 'milk_potion') {
-        // Cute green potion bottle
-        ctx.fillStyle = '#10b981';
-        ctx.fillRect(drawX + 4, drawY + 6, 10, 11);
-        ctx.fillStyle = '#ffffff'; // milk white stopper cap
-        ctx.fillRect(drawX + 6, drawY + 2, 6, 4);
+        if (levelConfig.environment === 'japanese_temple') {
+          // Sacred Sake ceramic flask (おみき)
+          ctx.fillStyle = '#f8fafc'; // clean white ceramic
+          ctx.beginPath();
+          ctx.moveTo(drawX + 6, drawY + 17);
+          ctx.lineTo(drawX + 4, drawY + 11);
+          ctx.quadraticCurveTo(drawX + 4, drawY + 6, drawX + 7, drawY + 6);
+          ctx.lineTo(drawX + 7, drawY + 2);
+          ctx.lineTo(drawX + 11, drawY + 2);
+          ctx.lineTo(drawX + 11, drawY + 6);
+          ctx.quadraticCurveTo(drawX + 14, drawY + 6, drawX + 14, drawY + 11);
+          ctx.lineTo(drawX + 12, drawY + 17);
+          ctx.closePath();
+          ctx.fill();
+          // Red thread tie decoration
+          ctx.fillStyle = '#dc2626';
+          ctx.fillRect(drawX + 7, drawY + 6, 4, 2);
+        } else {
+          // Cute green potion bottle
+          ctx.fillStyle = '#10b981';
+          ctx.fillRect(drawX + 4, drawY + 6, 10, 11);
+          ctx.fillStyle = '#ffffff'; // milk white stopper cap
+          ctx.fillRect(drawX + 6, drawY + 2, 6, 4);
+        }
       } else if (it.itemType === 'catnip') {
-        // Glowing purple leaves
-        ctx.fillStyle = '#a855f7';
-        ctx.beginPath();
-        ctx.ellipse(drawX + 9, drawY + 9, 8, 4, Math.PI/4, 0, Math.PI*2);
-        ctx.ellipse(drawX + 9, drawY + 9, 8, 4, -Math.PI/4, 0, Math.PI*2);
-        ctx.fill();
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('⭐', drawX + 3, drawY + 12);
+        if (levelConfig.environment === 'japanese_temple') {
+          // Japanese Legendary scroll (巻物)
+          ctx.fillStyle = '#dc2626'; // Vermillion outer scroll
+          ctx.fillRect(drawX + 4, drawY + 4, 11, 10);
+          ctx.fillStyle = '#fef08a'; // golden scroll rods
+          ctx.fillRect(drawX + 2, drawY + 3, 2, 12);
+          ctx.fillRect(drawX + 15, drawY + 3, 2, 12);
+          // white binding cord
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(drawX + 8, drawY + 4, 3, 10);
+        } else {
+          // Glowing purple leaves
+          ctx.fillStyle = '#a855f7';
+          ctx.beginPath();
+          ctx.ellipse(drawX + 9, drawY + 9, 8, 4, Math.PI/4, 0, Math.PI*2);
+          ctx.ellipse(drawX + 9, drawY + 9, 8, 4, -Math.PI/4, 0, Math.PI*2);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText('⭐', drawX + 3, drawY + 12);
+        }
       }
     });
 
@@ -1876,37 +2169,128 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           // Flapping wings sky crow logic
           const isSkyBoss = enemy.id === 'boss_stage_3';
           const isCyberBoss = enemy.id === 'boss_stage_5';
-          ctx.fillStyle = isCyberBoss ? '#083344' : (isSkyBoss ? '#1e1b4b' : '#312e81'); // dark dark blue crown
-          // main head-body oval
-          ctx.beginPath();
-          ctx.ellipse(drawX + enemy.width/2, drawY + enemy.height/2, enemy.width/2 - 2, enemy.height/3, 0, 0, Math.PI*2);
-          ctx.fill();
-          // flapping wings
-          ctx.fillStyle = isCyberBoss ? '#06b6d4' : (isSkyBoss ? '#2e1065' : '#4f46e5');
-          const wingFlap = Math.sin(animCycle.current * 0.4) * (enemy.height / 2);
-          ctx.beginPath();
-          ctx.moveTo(drawX + enemy.width/2, drawY + enemy.height/2);
-          ctx.lineTo(drawX + enemy.width/4, drawY + enemy.height/2 - wingFlap);
-          ctx.lineTo(drawX + enemy.width/2, drawY + enemy.height/3);
-          ctx.closePath();
-          ctx.fill();
-          // golden beak
-          ctx.fillStyle = isCyberBoss ? '#a855f7' : '#fbbf24'; // Cyber is glowing purple laser eye beak
-          ctx.beginPath();
-          ctx.moveTo(enemy.direction === 1 ? drawX + enemy.width : drawX, drawY + enemy.height/2 - 2);
-          ctx.lineTo(enemy.direction === 1 ? drawX + enemy.width + 10 : drawX - 10, drawY + enemy.height/2);
-          ctx.lineTo(enemy.direction === 1 ? drawX + enemy.width : drawX, drawY + enemy.height/2 + 4);
-          ctx.closePath();
-          ctx.fill();
+          const isFoxBoss = enemy.id === 'boss_stage_6';
 
-          if (isSkyBoss) {
-            ctx.fillStyle = '#f472b6';
-            ctx.font = 'bold 11px system-ui';
-            ctx.fillText('🦅メカ・トワ', drawX - 10, drawY - 6);
-          } else if (isCyberBoss) {
-            ctx.fillStyle = '#22d3ee';
-            ctx.font = 'bold 11px system-ui';
-            ctx.fillText('👾マザー・マトリクスAI', drawX - 10, drawY - 6);
+          if (isFoxBoss) {
+            // Draw Nine-Tailed Fox!
+            // First, 9 flowing glowing tails behind the fox
+            for (let t = 0; t < 9; t++) {
+              const tailAngle = -Math.PI / 4 + (t * Math.PI) / 8;
+              const waveY = Math.sin(animCycle.current * 0.15 + t) * 10;
+              const tailLen = 65;
+              const tailX = drawX + enemy.width / 2 + Math.cos(tailAngle) * tailLen;
+              const tailY = drawY + enemy.height / 2 + Math.sin(tailAngle) * tailLen + waveY;
+              
+              const grad = ctx.createLinearGradient(drawX + enemy.width / 2, drawY + enemy.height / 2, tailX, tailY);
+              grad.addColorStop(0, '#f97316'); // fire orange fox base
+              grad.addColorStop(0.7, '#f43f5e'); // beautiful rose pink
+              grad.addColorStop(1, '#ffffff'); // pure white tips!
+              
+              ctx.strokeStyle = grad;
+              ctx.lineWidth = 14 - Math.abs(t - 4) * 1.2; // middle tails are thicker
+              ctx.lineCap = 'round';
+              ctx.beginPath();
+              ctx.moveTo(drawX + enemy.width / 2, drawY + enemy.height / 2);
+              ctx.quadraticCurveTo(
+                drawX + enemy.width / 2 + Math.cos(tailAngle) * (tailLen/2),
+                drawY + enemy.height / 2 + Math.sin(tailAngle) * (tailLen/2) + waveY * 2,
+                tailX, tailY
+              );
+              ctx.stroke();
+            }
+
+            // Draw large fox body (oval)
+            ctx.fillStyle = '#f97316';
+            ctx.beginPath();
+            ctx.ellipse(drawX + enemy.width / 2, drawY + enemy.height / 2 + 10, enemy.width / 3, enemy.height / 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw fox head (rounded triangle pointing down)
+            ctx.fillStyle = '#f97316';
+            ctx.beginPath();
+            ctx.moveTo(drawX + enemy.width / 2 - 25, drawY + enemy.height / 2 - 15);
+            ctx.lineTo(drawX + enemy.width / 2 + 25, drawY + enemy.height / 2 - 15);
+            ctx.lineTo(drawX + enemy.width / 2, drawY + enemy.height / 2 + 15);
+            ctx.closePath();
+            ctx.fill();
+
+            // Ear left
+            ctx.fillStyle = '#e11d48'; // inner rose red
+            ctx.beginPath();
+            ctx.moveTo(drawX + enemy.width / 2 - 22, drawY + enemy.height / 2 - 15);
+            ctx.lineTo(drawX + enemy.width / 2 - 35, drawY + enemy.height / 2 - 40);
+            ctx.lineTo(drawX + enemy.width / 2 - 5, drawY + enemy.height / 2 - 15);
+            ctx.closePath();
+            ctx.fill();
+            // Ear right
+            ctx.beginPath();
+            ctx.moveTo(drawX + enemy.width / 2 + 22, drawY + enemy.height / 2 - 15);
+            ctx.lineTo(drawX + enemy.width / 2 + 35, drawY + enemy.height / 2 - 40);
+            ctx.lineTo(drawX + enemy.width / 2 + 5, drawY + enemy.height / 2 - 15);
+            ctx.closePath();
+            ctx.fill();
+
+            // White face fur masks
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(drawX + enemy.width / 2 - 10, drawY + enemy.height / 2, 8, 12, Math.PI / 6, 0, Math.PI * 2);
+            ctx.ellipse(drawX + enemy.width / 2 + 10, drawY + enemy.height / 2, 8, 12, -Math.PI / 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Golden glowing eyes
+            ctx.fillStyle = '#eab308';
+            ctx.beginPath();
+            ctx.arc(drawX + enemy.width / 2 - 8, drawY + enemy.height / 2 - 3, 3, 0, Math.PI * 2);
+            ctx.arc(drawX + enemy.width / 2 + 8, drawY + enemy.height / 2 - 3, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Nose
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(drawX + enemy.width / 2 - 2, drawY + enemy.height / 2 + 10, 4, 3);
+
+            // Red sacred forehead crest mark
+            ctx.fillStyle = '#e11d48';
+            ctx.beginPath();
+            ctx.arc(drawX + enemy.width / 2, drawY + enemy.height / 2 - 10, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Label
+            ctx.fillStyle = '#fda4af'; // beautiful pastel pink
+            ctx.font = 'bold 12px "Inter", system-ui';
+            ctx.fillText('🦊九尾の妖狐', drawX + enemy.width / 2 - 35, drawY - 8);
+          } else {
+            ctx.fillStyle = isCyberBoss ? '#083344' : (isSkyBoss ? '#1e1b4b' : '#312e81'); // dark dark blue crown
+            // main head-body oval
+            ctx.beginPath();
+            ctx.ellipse(drawX + enemy.width/2, drawY + enemy.height/2, enemy.width/2 - 2, enemy.height/3, 0, 0, Math.PI*2);
+            ctx.fill();
+            // flapping wings
+            ctx.fillStyle = isCyberBoss ? '#06b6d4' : (isSkyBoss ? '#2e1065' : '#4f46e5');
+            const wingFlap = Math.sin(animCycle.current * 0.4) * (enemy.height / 2);
+            ctx.beginPath();
+            ctx.moveTo(drawX + enemy.width/2, drawY + enemy.height/2);
+            ctx.lineTo(drawX + enemy.width/4, drawY + enemy.height/2 - wingFlap);
+            ctx.lineTo(drawX + enemy.width/2, drawY + enemy.height/3);
+            ctx.closePath();
+            ctx.fill();
+            // golden beak
+            ctx.fillStyle = isCyberBoss ? '#a855f7' : '#fbbf24'; // Cyber is glowing purple laser eye beak
+            ctx.beginPath();
+            ctx.moveTo(enemy.direction === 1 ? drawX + enemy.width : drawX, drawY + enemy.height/2 - 2);
+            ctx.lineTo(enemy.direction === 1 ? drawX + enemy.width + 10 : drawX - 10, drawY + enemy.height/2);
+            ctx.lineTo(enemy.direction === 1 ? drawX + enemy.width : drawX, drawY + enemy.height/2 + 4);
+            ctx.closePath();
+            ctx.fill();
+
+            if (isSkyBoss) {
+              ctx.fillStyle = '#f472b6';
+              ctx.font = 'bold 11px system-ui';
+              ctx.fillText('🦅メカ・トワ', drawX - 10, drawY - 6);
+            } else if (isCyberBoss) {
+              ctx.fillStyle = '#22d3ee';
+              ctx.font = 'bold 11px system-ui';
+              ctx.fillText('👾マザー・マトリクスAI', drawX - 10, drawY - 6);
+            }
           }
           break;
 
@@ -2283,13 +2667,13 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             <ChevronRight className="w-8 h-8 font-extrabold stroke-[3.5px]" />
           </button>
           
-           <div className="hidden lg:flex flex-col text-[10px] text-slate-400 font-sans ml-2 leading-tight">
-             <span>💻 <strong>PCキーバインド一覧:</strong></span>
-             <span>・左右走る: [A]/[D] 又は [←]/[→] キー</span>
-             <span>・ジャンプ: [SPACE], [W], [↑]</span>
-             <span>・ひっかき(近): [Z] 又は [J] (威力 {(2.5 + (stats.clawLevel === 5 ? 3.0 : stats.clawLevel * 0.5)).toFixed(1)})</span>
-             <span>・{stats.clawLevel >= 3 ? '骨シュート(長)' : '毛玉弾(中)'}: [X] 又は [K] (威力 {(stats.clawLevel >= 3 ? (1.5 + (stats.clawLevel - 3) * 0.5) : (0.8 + stats.clawLevel * 0.2)).toFixed(1)})</span>
-           </div>
+            <div className="hidden lg:flex flex-col text-[10px] text-slate-400 font-sans ml-2 leading-tight">
+              <span>💻 <strong>PCキーバインド一覧:</strong></span>
+              <span>・左右走る: [A]/[D] 又は [←]/[→] キー</span>
+              <span>・ジャンプ: [SPACE], [W], [↑]</span>
+              <span>・ひっかき(近): [Z] 又は [J] (威力 {(2.5 + (stats.clawLevel === 5 ? 3.0 : stats.clawLevel * 0.5)).toFixed(1)}) / 踏みつけ: 敵の上に着地 (威力 {stats.clawLevel.toFixed(1)})</span>
+              <span>・{stats.clawLevel >= 3 ? '骨シュート(長)' : '毛玉弾(中)'}: [X] 又は [K] (威力 {(stats.clawLevel >= 3 ? (1.5 + (stats.clawLevel - 3) * 0.5) : (0.8 + stats.clawLevel * 0.2)).toFixed(1)})</span>
+            </div>
          </div>
  
          {/* Right Side: Jump & Action Buttons */}

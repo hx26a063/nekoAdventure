@@ -98,7 +98,7 @@ export interface LevelConfig {
   name: string;
   jpName: string;
   description: string;
-  environment: 'grassland' | 'sewer' | 'sky_castle' | 'magma_cave' | 'cyber_space';
+  environment: 'grassland' | 'sewer' | 'sky_castle' | 'magma_cave' | 'cyber_space' | 'japanese_temple';
   bgColors: string[]; // Gradient colors for canvas bg
   groundColor: string;
   physics: {

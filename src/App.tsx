@@ -110,6 +110,22 @@ const levels: LevelConfig[] = [
     targetScore: 10000,
     mapLength: 4500,
   },
+  {
+    id: 6,
+    name: 'japanese_temple',
+    jpName: '絢爛の和風神社',
+    description: '桜吹雪が舞い散る、朱塗りの大鳥居や太鼓橋がそびえる神秘的な和風神社エリア。空中を飛び交う不気味な桜の手裏剣や、ゆらゆら浮遊する「狐火」の難関をくぐり抜け、最奥部に潜む「九尾の妖狐」に挑みましょう！',
+    environment: 'japanese_temple',
+    bgColors: ['#1c0d12', '#581c24'], // Cherry blossom crimson dark gradient
+    groundColor: '#1a120b', // Lacquered wood / stone path style
+    physics: {
+      gravity: 0.32,
+      friction: 0.89,
+    },
+    gimmicksDescription: '美しく華麗な桜吹雪の風。不規則に漂う幽玄な「狐火」、和傘のジャンプクッション。最深ボス「九尾の妖狐」。',
+    targetScore: 12500,
+    mapLength: 4800,
+  },
 ];
 
 export default function App() {
@@ -145,6 +161,31 @@ export default function App() {
       }
     }
   }, []);
+
+  // Manage Background Music (BGM) based on game state and selected stage
+  useEffect(() => {
+    if (gameState === GameState.MENU || gameState === GameState.STAGE_SELECT || gameState === GameState.SHOP) {
+      audio.playBgm('/2_23_AM.mp3');
+    } else if (gameState === GameState.PLAYING) {
+      // Map stages to respective BGM track paths
+      if (currentStageId === 1) {
+        audio.playBgm('/少年達の夏休み的なBGM.mp3');
+      } else if (currentStageId === 2) {
+        audio.playBgm('/Flutter.mp3');
+      } else if (currentStageId === 3) {
+        audio.playBgm('/パステルハウス.mp3');
+      } else if (currentStageId === 4) {
+        audio.playBgm('/Thunderbolt.mp3');
+      } else if (currentStageId === 5) {
+        audio.playBgm('/8-bit_Aggressive1.mp3');
+      } else if (currentStageId === 6) {
+        audio.playBgm('/風切.mp3');
+      }
+    } else if (gameState === GameState.GAME_OVER || gameState === GameState.GAME_CLEAR) {
+      // Pause/stop stage BGM so the specialized game over or clear melody plays perfectly
+      audio.stopBgm();
+    }
+  }, [gameState, currentStageId]);
 
   const saveStats = (newStats: PlayerStats) => {
     setStats(newStats);

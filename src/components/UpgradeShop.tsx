@@ -94,8 +94,8 @@ export const UpgradeShop: React.FC<UpgradeShopProps> = ({ stats, onPurchaseUpgra
     },
     {
       id: 'clawLevel',
-      name: 'つめ強化 (ひっかき/お魚の骨シュート)',
-      description: 'つめの強度と威力を高めます。レベル3以上で遠距離「お魚の骨シュート」が解放されます！',
+      name: 'つめ強化 (ひっかき/踏みつけ/お魚の骨シュート)',
+      description: 'つめの強度と威力を高め、ひっかきと踏みつけの攻撃力を強化します。レベル3以上で「お魚の骨シュート」が解放！',
       icon: <Scissors className="w-6 h-6 text-emerald-500" />,
       color: 'from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border-teal-200',
       level: stats.clawLevel,
@@ -104,11 +104,11 @@ export const UpgradeShop: React.FC<UpgradeShopProps> = ({ stats, onPurchaseUpgra
       getCost: (lvl) => lvl * 4, // 4, 8, 12, 16 fish
       lvlDescriptions: [
         '攻撃不可',
-        '通常ひっかき (初期)',
-        'ひっかき威力アップ！',
-        '★お魚の骨シュート解放！',
-        '骨の威力・弾速アップ！',
-        '究極の魚の骨魔導ネコ！'
+        '通常ひっかき (初期、踏みつけ威力1)',
+        'ひっかき＆踏みつけ威力アップ！ (踏みつけ威力2)',
+        '★お魚の骨シュート解放！ (踏みつけ威力3)',
+        '骨の威力・弾速アップ！ (踏みつけ威力4)',
+        '究極の魚の骨魔導ネコ！ (踏みつけ威力5!!)'
       ],
     },
     {
